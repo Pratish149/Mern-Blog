@@ -21,7 +21,7 @@ const signup = async (req, res, next) => {
 
   try {
     await newUser.save();
-    res.status(200).json({ message: "Signup successful" });
+    res.status(200).json({ status: "SUCCESS", message: "Signup successful" });
   } catch (error) {
     next(error);
   }
