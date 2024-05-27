@@ -24,9 +24,9 @@ const OAuth = () => {
         email,
         googlePhotoUrl: photoURL,
       });
-      const { status } = result?.data || {};
+      const { status, user } = result?.data || {};
       if (status === "SUCCESS") {
-        dispatch(signInSuccess(result?.data));
+        dispatch(signInSuccess(user));
         navigate("/");
       }
     } catch (e) {
