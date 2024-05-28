@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const userRouter = require("./routes/user.route");
 const authRouter = require("./routes/auth.route");
+const cookieParser = require("cookie-parser");
 
 mongoose
   .connect(process.env.MONGO_URL)
@@ -16,6 +17,7 @@ mongoose
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
 
 const PORT = process.env.PORT || 5000;
 

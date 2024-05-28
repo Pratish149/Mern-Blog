@@ -48,7 +48,7 @@ const signin = async (req, res, next) => {
     }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY);
-    const { password, ...rest } = user._doc;
+    const { password: pass, ...rest } = user._doc;
 
     res
       .status(200)
