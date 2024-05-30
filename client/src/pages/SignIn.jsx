@@ -38,9 +38,9 @@ const SignIn = () => {
       axios
         .post("/api/auth/signin", formData)
         .then((res) => {
-          const { status } = res?.data || {};
+          const { status, user } = res?.data || {};
           if (status === "SUCCESS") {
-            dispatch(signInSuccess(res?.data));
+            dispatch(signInSuccess(user));
             navigate("/");
           }
         })
