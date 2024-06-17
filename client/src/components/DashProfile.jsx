@@ -11,6 +11,7 @@ import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { app } from "../firebase";
 import {
   deleteUserFailure,
@@ -37,8 +38,8 @@ const DashProfile = () => {
   const imagePickerRef = useRef();
   const dispatch = useDispatch();
 
-  const { currentUser, error } = useSelector((state) => state.user);
-  const { profilePicture, username, email } = currentUser || {};
+  const { currentUser, error, loading } = useSelector((state) => state.user);
+  const { profilePicture, username, email, isAdmin } = currentUser || {};
 
   useEffect(() => {
     if (profileImageFile) {
@@ -264,9 +265,25 @@ const DashProfile = () => {
           placeholder="password"
           onChange={handleChange}
         />
-        <Button type="submit" gradientDuoTone="purpleToBlue" outline>
-          Update
+        <Button
+          type="submit"
+          gradientDuoTone="purpleToBlue"
+          outline
+          disabled={loading || imageFileUploading}
+        >
+          {loading ? "Loading..." : "Update"}
         </Button>
+        {isAdmin && (
+          <Link to="/create-post">
+            <Button
+              type="button"
+              gradientDuoTone="purpleToPink"
+              className="w-full"
+            >
+              Create a post
+            </Button>
+          </Link>
+        )}
       </form>
       <div className="text-red-500 flex justify-between mt-5">
         <span onClick={() => setShowModal(true)} className="cursor-pointer">
