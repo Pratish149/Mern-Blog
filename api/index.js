@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const userRouter = require("./routes/user.route");
 const authRouter = require("./routes/auth.route");
+const postRouter = require("./routes/post.route");
 const cookieParser = require("cookie-parser");
 
 mongoose
@@ -27,6 +28,7 @@ app.listen(PORT, () => {
 
 app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/post", postRouter);
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
