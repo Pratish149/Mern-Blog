@@ -33,6 +33,63 @@ const create = async (req, res, next) => {
   }
 };
 
+const getPosts = async (req, res, next) => {
+  try {
+    const {
+      startIndex,
+      limit,
+      order,
+      userId,
+      category,
+      slug,
+      postId,
+      searchTerm,
+    } = req?.query || {};
+    const index = parseInt(startIndex || "0");
+    const limitRequired = parseInt(limit || "9");
+    const sortDirection = order === "asc" ? 1 : -1;
+    const posts = await Post.find({
+      ...(userId && { userId }),
+      ...(category && { category }),
+      ...(slug && { slug }),
+      ...(postId && { _id: postId }),
+      ...(searchTerm && {
+        $or: [
+          { title: { $regex: searchTerm, $options: "i" } },
+          { content: { $regex: searchTerm, $options: "i" } },
+        ],
+      }),
+    })
+      .sort({ updatedAt: sortDirection })
+      .skip(index)
+      .limit(limitRequired);
+
+    const totalPosts = await Post.countDocuments();
+
+    const currentTime = new Date();
+    const oneMonthAgoTime = new Date(
+      currentTime.getFullYear(),
+      currentTime.getMonth() - 1,
+      currentTime.getDate()
+    );
+
+    const lastMonthPosts = await Post.countDocuments({
+      createdAt: { $gte: oneMonthAgoTime },
+    });
+
+    res.status(200).json({
+      status: "SUCCESS",
+      message: "Posts fetched successfully",
+      posts,
+      totalPosts,
+      lastMonthPosts,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   create,
+  getPosts,
 };
