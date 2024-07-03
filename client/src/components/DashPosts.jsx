@@ -9,23 +9,47 @@ const DashPosts = () => {
   const { _id, isAdmin } = currentUser || {};
 
   const [userPosts, setUserPosts] = useState([]);
+  const [showMore, setShowMore] = useState(true);
 
   useEffect(() => {
+    const apiParams = {
+      userId: _id,
+    };
+    fetchUserPosts(apiParams);
+  }, [_id]);
+
+  const fetchUserPosts = async (params) => {
     if (!isAdmin) {
       return; // return if user is not admin
     }
+
+    let queryParams = "";
+    Object.keys(params).forEach((key, index) => {
+      queryParams += `${index === 0 ? "?" : "&"}${key}=${params[key]}`;
+    });
     axios
-      .get(`/api/post/getPosts?userId=${_id}`)
+      .get(`/api/post/getPosts${queryParams}`)
       .then((response) => {
         const { status, posts } = response?.data || {};
         if (status === "SUCCESS") {
-          setUserPosts(posts);
+          setUserPosts((prev) => [...prev, ...posts]);
+          if (posts.length < 9) {
+            setShowMore(false);
+          }
         } else {
           console.log(status);
         }
       })
       .catch((error) => console.log(error));
-  }, [_id]);
+  };
+
+  const handleShowMore = () => {
+    const apiParams = {
+      userId: _id,
+      startIndex: userPosts.length,
+    };
+    fetchUserPosts(apiParams);
+  };
 
   return (
     <div className="table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
@@ -42,10 +66,10 @@ const DashPosts = () => {
                 <span>Edit</span>
               </Table.HeadCell>
             </Table.Head>
-            {userPosts?.map((post) => {
+            {userPosts?.map((post, index) => {
               const { updatedAt, image, title, slug, category } = post || {};
               return (
-                <Table.Body className="divide-y">
+                <Table.Body className="divide-y" key={String(index)}>
                   <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
                     <Table.Cell>
                       {new Date(updatedAt).toLocaleDateString()}
@@ -65,7 +89,7 @@ const DashPosts = () => {
                         to={`/post/${slug}`}
                       >
                         {title}
-                      </Link>{" "}
+                      </Link>
                     </Table.Cell>
                     <Table.Cell>{category}</Table.Cell>
                     <Table.Cell>
@@ -86,6 +110,14 @@ const DashPosts = () => {
               );
             })}
           </Table>
+          {showMore && (
+            <button
+              className="w-full text-teal-500 self-center text-sm py-7"
+              onClick={handleShowMore}
+            >
+              Show more
+            </button>
+          )}
         </>
       ) : (
         <p>You have no posts yet!</p>
