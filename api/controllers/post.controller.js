@@ -106,8 +106,39 @@ const deletePost = async (req, res, next) => {
   }
 };
 
+const updatePost = async (req, res, next) => {
+  const { title, content, category, image } = req?.body || {};
+  const { userId, postId } = req.params;
+  const { id, isAdmin } = req?.user || {};
+  if (!isAdmin || userId !== id) {
+    return next(errorHandler(403, "You are not allowed to update this post"));
+  }
+  try {
+    const updatedPost = await Post.findByIdAndUpdate(
+      postId,
+      {
+        $set: {
+          title,
+          content,
+          category,
+          image,
+        },
+      },
+      { new: true }
+    );
+    res.status(200).json({
+      status: "SUCCESS",
+      message: "Post updated successfully",
+      post: updatedPost,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   create,
   getPosts,
   deletePost,
+  updatePost,
 };

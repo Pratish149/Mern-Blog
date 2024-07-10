@@ -11,6 +11,7 @@ import Home from "./pages/Home";
 import Projects from "./pages/Projects";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import UpdatePost from "./pages/UpdatePost";
 
 export default function App() {
   return (
@@ -19,20 +20,15 @@ export default function App() {
       <Routes>
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route element={<PrivateRoute />}>
-          <Route path="/" element={<Home />} />
-        </Route>
-        <Route element={<PrivateRoute />}>
-          <Route path="/about" element={<About />} />
-        </Route>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/projects" element={<Projects />} />
         <Route element={<PrivateRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
         </Route>
-        <Route element={<PrivateRoute />}>
-          <Route path="/projects" element={<Projects />} />
-        </Route>
         <Route element={<OnlyAdminPrivateRoute />}>
           <Route path="/create-post" element={<CreatePost />} />
+          <Route path="/update-post/:postId" element={<UpdatePost />} />
         </Route>
       </Routes>
       <Footer />
